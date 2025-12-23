@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="bg">
+<head>
+    <meta charset="UTF-8">
+    <title>Калкулатор за ресто</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #ffffff;
+        }
+
+        .container {
+            width: 300px;
+            margin: auto;
+            border: 1px solid #ccc;
+            padding: 20px;
+            background-color: #f9f9f9;
+        }
+
+        label {
+            display: block;
+            margin-top: 10px;
+        }
+
+        input[type="number"] {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+            box-sizing: border-box;
+        }
+
+        button {
+            width: 100%;
+            padding: 10px;
+            margin-top: 10px;
+            border: none;
+            cursor: pointer;
+            font-size: large;
+        }
+
+        button:hover:not(:disabled) {
+            opacity: 0.85;
+        }
+
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        #calculateButton {
+            background-color: #008CBA;
+            color: white;
+            font-size: larger;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        #clearButton {
+            background-color: #A33EA8;
+            color: white;
+            visibility: hidden;
+        }
+
+        #clearButton:hover {
+            background-color: #8D3099;
+        }
+
+        #result {
+            margin-top: 10px;
+            font-weight: bold;
+            font-size: x-large;
+        }
+
+        #error-message {
+            margin-top: 10px;
+            color: red;
+        }
+
+        #exchangeRate {
+            margin-top: 10px;
+            font-size: small;
+        }
+		.a2a_default_style {
+			display: flex;
+			justify-content: center
+		}
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Калкулатор за ресто</h1>
+
+        <label for="amountGiven">Сума, дадена от клиента (в лева):</label>
+        <input type="number" id="amountGiven" min="0" step="0.01">
+
+        <label for="cashRegisterAmount">Сума от касовия апарат (в евро):</label>
+        <input type="number" id="cashRegisterAmount" min="0" step="0.01">
+
+        <div id="exchangeRate">Обменен курс: 1 EUR = 1.95583 BGN</div>
+
+        <button id="calculateButton" disabled>
+            <span id="calcIcon">⛔</span>
+            <span>Изчисли ресто</span>
+        </button>
+
+        <button id="clearButton">Изчисти стойностите</button>
+
+        <div id="result" aria-live="polite"></div>
+        <div id="error-message" aria-live="assertive"></div>
+		<!-- AddToAny BEGIN -->
+		<div class="a2a_kit a2a_kit_size_32 a2a_default_style" data-a2a-url="https://www.changecalculator.themeleaks.com/" data-a2a-title="Калкулатор за ресто">
+			<a class="a2a_button_viber"></a>
+			<a class="a2a_button_whatsapp"></a>
+			<a class="a2a_button_facebook_messenger"></a>
+			<a class="a2a_button_telegram"></a>
+			<a class="a2a_button_copy_link"></a>
+		</div>
+		<script>
+			var a2a_config = a2a_config || {};
+			a2a_config.locale = "bg";
+		</script>
+		<script defer src="https://static.addtoany.com/menu/page.js"></script>
+		<!-- AddToAny END -->
+	</div>
+
+    <script>
+        const EXCHANGE_RATE = 1.95583;
+
+        const amountGivenInput = document.getElementById('amountGiven');
+        const cashRegisterInput = document.getElementById('cashRegisterAmount');
+        const result = document.getElementById('result');
+        const errorMessage = document.getElementById('error-message');
+        const clearButton = document.getElementById('clearButton');
+        const calculateButton = document.getElementById('calculateButton');
+        const calcIcon = document.getElementById('calcIcon');
+
+        amountGivenInput.addEventListener('input', checkInputFields);
+        cashRegisterInput.addEventListener('input', checkInputFields);
+        calculateButton.addEventListener('click', calculateChange);
+        clearButton.addEventListener('click', clearInputs);
+
+        function checkInputFields() {
+            const amountValue = amountGivenInput.value;
+            const cashValue = cashRegisterInput.value;
+
+            // Enable / disable calculate button
+            const enabled = amountValue && cashValue;
+            calculateButton.disabled = !enabled;
+            calcIcon.textContent = enabled ? '✔' : '⛔';
+
+            // If both inputs are empty → auto clear result & error
+            if (!amountValue && !cashValue) {
+                result.textContent = '';
+                errorMessage.textContent = '';
+            }
+
+            // Show clear button only if there is something to clear
+            const hasSomething =
+                amountValue ||
+                cashValue ||
+                result.textContent ||
+                errorMessage.textContent;
+
+            clearButton.style.visibility = hasSomething ? 'visible' : 'hidden';
+        }
+
+        function calculateChange() {
+            const amountGiven = parseFloat(amountGivenInput.value);
+            const cashRegisterAmount = parseFloat(cashRegisterInput.value);
+
+            if (amountGiven <= 0 || cashRegisterAmount < 0) {
+                errorMessage.textContent = 'Моля, въведете положителни стойности.';
+                result.textContent = '';
+                return;
+            }
+
+            const paidInBGN = cashRegisterAmount * EXCHANGE_RATE;
+
+            if (paidInBGN > amountGiven) {
+                errorMessage.textContent = 'Сумата в евро не може да бъде по-голяма от сумата в лева.';
+                result.textContent = '';
+                return;
+            }
+
+            const changeInEUR = (amountGiven - paidInBGN) / EXCHANGE_RATE;
+
+            result.textContent = `Ресто в евро: ${changeInEUR.toFixed(2)}`;
+            errorMessage.textContent = '';
+            checkInputFields();
+        }
+
+        function clearInputs() {
+            amountGivenInput.value = '';
+            cashRegisterInput.value = '';
+            result.textContent = '';
+            errorMessage.textContent = '';
+            checkInputFields();
+        }
+    </script>
+</body>
+</html>
