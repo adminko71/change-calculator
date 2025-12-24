@@ -75,11 +75,15 @@
             margin-top: 30px;
             font-weight: bold;
             font-size: x-large;
+			display: none;
         }
 
         #error-message {
             margin-top: 30px;
-            color: red;
+			padding: 15px;
+			background-color: darkred;
+            color: white;
+			display: none;
         }
 
         #exchangeRate {
@@ -180,9 +184,13 @@
             const amountGiven = parseFloat(amountGivenInput.value);
             const cashRegisterAmount = parseFloat(cashRegisterInput.value);
 
+			result.style.display = 'block';
+			errorMessage.style.display = 'block';
+
             if (amountGiven <= 0 || cashRegisterAmount < 0) {
                 errorMessage.textContent = 'Моля, въведете положителни стойности.';
                 result.textContent = '';
+				result.style.display = 'none';
                 return;
             }
 
@@ -191,6 +199,7 @@
             if (paidInBGN > amountGiven) {
                 errorMessage.textContent = 'Сумата в евро не може да бъде по-голяма от сумата в лева.';
                 result.textContent = '';
+				result.style.display = 'none';
                 return;
             }
 
@@ -198,6 +207,8 @@
 
             result.textContent = `Ресто в евро: ${changeInEUR.toFixed(2)}`;
             errorMessage.textContent = '';
+			result.style.display = 'block';
+			errorMessage.style.display = 'none';
             checkInputFields();
         }
 
@@ -206,6 +217,8 @@
             cashRegisterInput.value = '';
             result.textContent = '';
             errorMessage.textContent = '';
+			result.style.display = 'none';
+			errorMessage.style.display = 'none';
             checkInputFields();
         }
     </script>
