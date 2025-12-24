@@ -64,7 +64,7 @@
         #clearButton {
             background-color: #A33EA8;
             color: white;
-            visibility: hidden;
+            display: none;
         }
 
         #clearButton:hover {
@@ -173,7 +173,7 @@
                 result.textContent ||
                 errorMessage.textContent;
 
-            clearButton.style.visibility = hasSomething ? 'visible' : 'hidden';
+            clearButton.style.display = hasSomething ? 'block' : 'none';
         }
 
         function calculateChange() {
