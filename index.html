@@ -168,6 +168,8 @@
             if (!amountValue && !cashValue) {
                 result.textContent = '';
                 errorMessage.textContent = '';
+				result.style.display = 'none';
+        		errorMessage.style.display = 'none';
             }
 
             // Show clear button only if there is something to clear
